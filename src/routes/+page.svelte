@@ -3,9 +3,19 @@
 
   let mouseX = 0;
   let mouseY = 0;
-
   const palabra1 = "Teuchitlán".split("");
   const palabra2 = "Ceremonia".split("");
+
+  let isTouchDevice = false;
+
+  onMount(() => {
+    // Detectar si el dispositivo es táctil (sin hover)
+    isTouchDevice = !window.matchMedia('(hover: hover)').matches;
+
+    if (!isTouchDevice) {
+      window.addEventListener('mousemove', handleMouseMove);
+    }
+  });
 
   function handleMouseMove(event) {
     mouseX = event.clientX;
@@ -29,10 +39,6 @@
       letter.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     });
   }
-
-  onMount(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-  });
 </script>
 
 <svelte:head>
@@ -60,16 +66,16 @@
 
     <div class="row justify-content-center align-items-center">
       <div class="col-5 text-end word-container">
-        {#each palabra1 as char, i}
-          <span class="letter" style="display: inline-block;">{char}</span>
+        {#each palabra1 as char}
+          <span class="letter" class:is-touch={isTouchDevice}>{char}</span>
         {/each}
       </div>
       <div class="col-1 text-center">
         <div class="separator"></div>
       </div>
       <div class="col-5 text-start word-container">
-        {#each palabra2 as char, i}
-          <span class="letter" style="display: inline-block;">{char}</span>
+        {#each palabra2 as char}
+          <span class="letter" class:is-touch={isTouchDevice}>{char}</span>
         {/each}
       </div>
     </div>
@@ -101,6 +107,17 @@
     transition: transform 0.15s ease-out;
     will-change: transform;
     pointer-events: none;
+    display: inline-block;
+  }
+
+  .letter.is-touch {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
   }
 
   .separator {
